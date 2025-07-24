@@ -1,6 +1,6 @@
 # Spamton Buddy - Chrome Extension
 
-Ever wanted [BIG SHOT] energy in your browser? Spamton Buddy injects a little chaos, charm, and KROMER™ into every webpage. This Chrome extension adds the iconic Spamton from Deltarune to the corner of your screen, where he... hangs out. That’s it. That’s the whole feature. But hey — now you're [DEALING WITH POWER]!
+Ever wanted [BIG SHOT] energy in your browser? Spamton Buddy injects a little chaos, charm, and KROMER™ into every webpage. This Chrome extension adds the iconic Spamton from Deltarune to  your screen, where he... hangs out. That’s it. That’s the whole feature. But hey — now you're [DEALING WITH POWER]!
 
 ## 🧩 Features
 - A floating Spamton on every website.
