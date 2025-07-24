@@ -1,4 +1,15 @@
 // == CONFIG ==
+
+const style = document.createElement('style');
+style.textContent = `
+  img {
+    image-rendering: pixelated !important;
+    image-rendering: crisp-edges !important;
+  }
+`;
+document.head.appendChild(style);
+
+
 // Idle frames
 let frames = [];
 for (let i = 1; i <= 4; i++) {
