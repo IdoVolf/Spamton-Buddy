@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Spamton Buddy",
+  "version": "1.0",
+  "description": "A little [BIG SHOT] walking in your [HYPERLINK BLOCKED]!",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+  "128": "assets/spamtonIconn.png"
+}
+,
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/idle/*.png",
+        "assets/dance1/*.png",
+        "assets/dance2/*.png",
+        "assets/lines/*.mp3"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
