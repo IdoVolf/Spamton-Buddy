@@ -7,7 +7,8 @@ Ever wanted [BIG SHOT] energy in your browser? Spamton Buddy injects a little ch
 - He dances (1 default dance and 3 more uniqe rare ones)
 - That’s it. He watches. He waits.
 - Works instantly on page load. No setup. Just Spamton.
-- says voiceline if clicked 
+- says voiceline if clicked
+- toggle "fire mod ;)" with mouse scrool on him 
 - can be grabbed and moved
 - adorable
 ## 🖼️ Icon
