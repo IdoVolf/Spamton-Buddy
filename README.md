@@ -8,7 +8,7 @@ Ever wanted [BIG SHOT] energy in your browser? Spamton Buddy injects a little ch
 - That’s it. He watches. He waits.
 - Works instantly on page load. No setup. Just Spamton.
 - says voiceline if clicked
-- toggle "fire mod ;)" with mouse scrool on him 
+- toggle "fire mod ;)" with mouse scroll on him 
 - can be grabbed and moved
 - adorable
 ## 🖼️ Icon
