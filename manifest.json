@@ -23,7 +23,10 @@
         "assets/lines/*.png",
         "assets/fly/*.png",
         "assets/laugh/*.png",
-        "assets/flySound.mp3"
+        "assets/flySound.mp3",
+        "assets/spam_roast.gif",
+        "assets/fireSE.mp3",
+        "assets/theme.mp3"
       ],
       "matches": ["<all_urls>"]
     }

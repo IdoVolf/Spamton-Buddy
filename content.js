@@ -80,10 +80,14 @@ function preloadDance2Frames() {
 
 // Load voice lines as Audio objects
 let voiceLines = [];
-for (let i = 1; i <= 3; i++) {
+for (let i = 1; i <= 8; i++) {
   const audio = new Audio(chrome.runtime.getURL(`assets/lines/line${i}.mp3`));
   voiceLines.push(audio);
 }
+
+// roasted gif
+const roastedGifUrl = chrome.runtime.getURL("assets/spam_roast.gif");
+let isRoasted = false;
 
 
 // == SETUP ==
@@ -94,6 +98,9 @@ spamton.style.top = "0px";
 spamton.style.zIndex = "9999";
 spamton.style.width = "100px";
 spamton.src = idleImages[0].src;
+spamton.style.transition = "transform 0.3s ease";
+spamton.style.transformOrigin = "center center"; // scale from center
+
 document.body.appendChild(spamton);
 let isDragging = false;
 let dragOffsetX = 0;
@@ -118,13 +125,24 @@ const laughFrameDelay = 100;
 let lasughInterval = null;
 let isLaughState = false;
 
+//fire SE
+const fireSound = new Audio(chrome.runtime.getURL("assets/fireSE.mp3"));
+fireSound.loop =true;
+
+//theme
+const spamTheme = new Audio(chrome.runtime.getURL("assets/theme.mp3"));
+spamTheme.loop = true;
+
 spamton.addEventListener("mousedown", (e) => {
+  if(isRoasted){
+    return 
+  }
   isDragging = true;
   isInSpecialState = true;
 
   dragOffsetX = e.clientX - spamton.offsetLeft;
   dragOffsetY = e.clientY - spamton.offsetTop;
-
+  spamTheme.pause()
   spamton.style.cursor = "grabbing";
   if (flySound.paused) {
     flySound.play().catch(err => {
@@ -144,6 +162,9 @@ spamton.addEventListener("mousedown", (e) => {
 
 
 window.addEventListener("mousemove", (e) => {
+    if(isRoasted){
+    return 
+  }
   if (!isDragging) return;
 
   // Move Spamton
@@ -160,6 +181,10 @@ window.addEventListener("mousemove", (e) => {
 });
 
 window.addEventListener("mouseup", () => {
+    if(isRoasted){
+    return 
+  }
+  spamTheme.play()
   if (!isDragging) return;
   isDragging = false;
   isInSpecialState = false;
@@ -173,6 +198,38 @@ window.addEventListener("mouseup", () => {
 
 
 
+spamton.addEventListener("wheel", (e) => {
+  if(spamTheme.paused){
+    spamTheme.play()
+  }else{
+    spamTheme.pause()
+  }
+  if(fireSound.paused){
+        fireSound.play();
+  }else{
+    fireSound.pause()
+  }
+  e.preventDefault(); // no page scroll
+
+  isRoasted = !isRoasted;
+
+  if (isRoasted) {
+    spamton.style.transform = "scale(2.5)";
+    // Stop other animations & show gif
+    clearInterval(mainAnimationInterval);
+    if (flyInterval) {
+      clearInterval(flyInterval);
+      flyInterval = null;
+    }
+    spamton.src = roastedGifUrl;
+  } else {
+    spamton.style.transform = "scale(1)"
+    // Resume normal animations
+    startAnimation();
+  }
+});
+
+
 // Function to play a random voice line
 function playRandomVoice() {
   const randomIndex = Math.floor(Math.random() * voiceLines.length);
@@ -181,6 +238,9 @@ function playRandomVoice() {
 
 // Play on click
 spamton.addEventListener("click", () => {
+  if(isRoasted){
+    return
+  }
   playRandomVoice();
 
   if (!isLaughState) {
@@ -220,7 +280,7 @@ const frameDelay = 150;
 function ifDance(callback) {
   setTimeout(() => {
     callback(Math.random() < 0.6); // 60% chance to dance
-  }, 20000);
+  }, 10000);
 }
 
 function startDanceTimer() {
@@ -235,12 +295,17 @@ function startDanceTimer() {
   });
 }
 
+let mainAnimationInterval = null;
+
 function startAnimation() {
+  // Clear existing interval to avoid duplicates
+  if (mainAnimationInterval) clearInterval(mainAnimationInterval);
+
   startDanceTimer();
 
-  setInterval(() => {
-    if (isDragging || isInSpecialState || isLaughState) {
-      // Skip idle/dance while flying
+  mainAnimationInterval = setInterval(() => {
+    if (isDragging || isInSpecialState || isLaughState || isRoasted) {
+      // Skip idle/dance animation if any special state active
       return;
     }
 
@@ -260,9 +325,42 @@ function startAnimation() {
   }, frameDelay);
 }
 
+// wheel event toggle roasting GIF
+spamton.addEventListener("auxclick", (e) => {
+  if (e.button !== 1) return; // Only middle mouse
+
+  e.preventDefault(); // Important to stop default scroll/auto-open
+
+  isRoasted = !isRoasted;
+
+  if (isRoasted) {
+    // Stop all animation
+    clearInterval(mainAnimationInterval);
+    if (flyInterval) {
+      clearInterval(flyInterval);
+      flyInterval = null;
+    }
+
+    isDragging = false;
+    spamton.style.cursor = "default";
+    spamton.src = roastedGifUrl;
+
+    // Enlarge Spamton
+    spamton.style.transform = "scale(2.5)"; // or spamton.style.width = '250px'
+  } else {
+    spamton.style.cursor = "grab";
+
+    spamton.style.transform = "scale(1)"; // back to normal
+    spamton.src = idleImages[0].src;
+    startAnimation();
+  }
+});
+
+
 
 // Kick off loading and animation
 Promise.all([preloadDance1Frames(), preloadDance2Frames()]).then(() => {
   console.log("All frames loaded! Starting animation...");
   startAnimation();
 });
+spamTheme.play()
