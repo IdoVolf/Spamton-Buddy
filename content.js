@@ -1,6 +1,6 @@
 // == CONFIG ==
 
-const style = document.createElement('style');
+const style = document.createElement('style'); 
 style.textContent = `
   img {
     image-rendering: pixelated !important;
@@ -22,6 +22,21 @@ frames.forEach(src => {
   idleImages.push(img);
 });
 
+//fly frames
+let flyFrames = [];
+for (let i = 1; i <= 2; i++) {
+  const img = new Image();
+  img.src = chrome.runtime.getURL(`assets/fly/fly${i}.png`);
+  flyFrames.push(img);
+}
+
+// laugh frames
+let laughFrames = [];
+for (let i =1; i <=3; i++){
+  const img = new Image();
+  img.src = chrome.runtime.getURL(`assets/laugh/laugh${i}.png`);
+  laughFrames.push(img);
+}
 
 // Dance1 preload
 const totalDance1Frames = 16;
@@ -86,27 +101,76 @@ let dragOffsetY = 0;
 
 spamton.style.cursor = "grab";
 
+
+//fly vars
+let flyFrame = 0;
+let lastFlyFrameTime = 0;
+const flyFrameDelay = 100; // Change fly frame every 100ms
+let flyInterval = null;
+let isInSpecialState = false;
+const flySound = new Audio(chrome.runtime.getURL("assets/flySound.mp3"));
+flySound.loop = true;
+
+// laugh vars
+let laughFrame = 0;
+let lastLaughFrame = 0;
+const laughFrameDelay = 100;
+let lasughInterval = null;
+let isLaughState = false;
+
 spamton.addEventListener("mousedown", (e) => {
   isDragging = true;
-  // Calculate offset to keep cursor relative to image when dragging
-  dragOffsetX = e.clientX - spamton.getBoundingClientRect().left;
-  dragOffsetY = e.clientY - spamton.getBoundingClientRect().top;
+  isInSpecialState = true;
+
+  dragOffsetX = e.clientX - spamton.offsetLeft;
+  dragOffsetY = e.clientY - spamton.offsetTop;
+
   spamton.style.cursor = "grabbing";
+  if (flySound.paused) {
+    flySound.play().catch(err => {
+      // Sometimes browser blocks autoplay without interaction, catch errors silently
+      console.log("Fly sound play blocked or error:", err);
+    });
+  }
+  // Start fly animation
+  if (!flyInterval) {
+    flyFrame = 0;
+    flyInterval = setInterval(() => {
+      flyFrame = (flyFrame + 1) % flyFrames.length;
+      spamton.src = flyFrames[flyFrame].src;
+    }, flyFrameDelay);
+  }
 });
+
 
 window.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
-  // Move spamton, subtract offset so it doesn’t jump
+
+  // Move Spamton
   spamton.style.left = `${e.clientX - dragOffsetX}px`;
   spamton.style.top = `${e.clientY - dragOffsetY}px`;
+
+  // Animate drag
+  const now = Date.now();
+  if (now - lastFlyFrameTime > flyFrameDelay) {
+    flyFrame = (flyFrame + 1) % flyFrames.length;
+    spamton.src = flyFrames[flyFrame].src;
+    lastFlyFrameTime = now;
+  }
 });
 
 window.addEventListener("mouseup", () => {
-  if (isDragging) {
-    isDragging = false;
-    spamton.style.cursor = "grab";
-  }
+  if (!isDragging) return;
+  isDragging = false;
+  isInSpecialState = false;
+  flySound.pause();
+  flySound.currentTime = 0;
+  clearInterval(flyInterval);
+  flyInterval = null;
+
+  spamton.style.cursor = "grab";
 });
+
 
 
 // Function to play a random voice line
@@ -118,6 +182,29 @@ function playRandomVoice() {
 // Play on click
 spamton.addEventListener("click", () => {
   playRandomVoice();
+
+  if (!isLaughState) {
+    isLaughState = true;
+    laughFrame = 0;
+
+    // Stop any idle/dance during laugh
+    let laughCount = 0;
+    const totalLaughLoops = 2; // how many full loops of laughFrames before stopping
+
+    laughInterval = setInterval(() => {
+      spamton.src = laughFrames[laughFrame].src;
+      laughFrame = (laughFrame + 1) % laughFrames.length;
+
+      if (laughFrame === 0) {
+        laughCount++;
+        if (laughCount >= totalLaughLoops) {
+          clearInterval(laughInterval);
+          laughInterval = null;
+          isLaughState = false;
+        }
+      }
+    }, laughFrameDelay);
+  }
 });
 
 
@@ -127,6 +214,7 @@ let shouldDance = false;
 let currentDanceImages = null;
 let frame = 0;
 const frameDelay = 150;
+
 
 // Decide if dancing every 20 seconds
 function ifDance(callback) {
@@ -151,12 +239,17 @@ function startAnimation() {
   startDanceTimer();
 
   setInterval(() => {
+    if (isDragging || isInSpecialState || isLaughState) {
+      // Skip idle/dance while flying
+      return;
+    }
+
     if (shouldDance && currentDanceImages) {
       frame++;
       if (frame >= currentDanceImages.length) {
         shouldDance = false;
         frame = 0;
-        spamton.src = idleImages[0].src; // reset to idle first frame
+        spamton.src = idleImages[0].src;
       } else {
         spamton.src = currentDanceImages[frame].src;
       }
@@ -166,6 +259,7 @@ function startAnimation() {
     }
   }, frameDelay);
 }
+
 
 // Kick off loading and animation
 Promise.all([preloadDance1Frames(), preloadDance2Frames()]).then(() => {

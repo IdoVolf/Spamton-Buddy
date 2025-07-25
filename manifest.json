@@ -19,7 +19,11 @@
         "assets/idle/*.png",
         "assets/dance1/*.png",
         "assets/dance2/*.png",
-        "assets/lines/*.mp3"
+        "assets/lines/*.mp3",
+        "assets/lines/*.png",
+        "assets/fly/*.png",
+        "assets/laugh/*.png",
+        "assets/flySound.mp3"
       ],
       "matches": ["<all_urls>"]
     }
