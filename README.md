@@ -4,11 +4,12 @@ Ever wanted [BIG SHOT] energy in your browser? Spamton Buddy injects a little ch
 
 ## 🧩 Features
 - A floating Spamton on every website.
-- He dances (1 default dance and 2 more uniqe rare ones)
+- He dances (1 default dance and 3 more uniqe rare ones)
 - That’s it. He watches. He waits.
 - Works instantly on page load. No setup. Just Spamton.
 - says voiceline if clicked 
 - can be grabbed and moved
+- adorable
 ## 🖼️ Icon
 
 Includes a custom extension icon for the Chrome toolbar.
