@@ -82,7 +82,7 @@ function preloadDance2Frames() {
 const totalDance3Frames = 9;
 let dance3Images = [];
 
-function preloadDance2Frames() {
+function preloadDance3Frames() {
   return new Promise((resolve) => {
     let loaded = 0;
     for (let i = 1; i <= totalDance3Frames; i++) {
