@@ -306,7 +306,7 @@ function getRandomInt(min, max) {
 function ifDance(callback) {
   if (dancing) {
     // If already dancing, schedule to check again soon
-    setTimeout(() => ifDance(callback), 8000);
+    setTimeout(() => ifDance(callback), 18000);
     return;
   }
   
@@ -315,7 +315,7 @@ function ifDance(callback) {
   callback(willDance);
   
   // Schedule next check in 8 seconds regardless
-  setTimeout(() => ifDance(callback), 8000);
+  setTimeout(() => ifDance(callback), 18000);
 }
 const dances = [dance1Images, dance2Images, dance3Images];
 
