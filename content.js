@@ -78,6 +78,27 @@ function preloadDance2Frames() {
   });
 }
 
+// Dance3 preload
+const totalDance3Frames = 9;
+let dance3Images = [];
+
+function preloadDance2Frames() {
+  return new Promise((resolve) => {
+    let loaded = 0;
+    for (let i = 1; i <= totalDance3Frames; i++) {
+      const img = new Image();
+      img.src = chrome.runtime.getURL(`assets/glitch/glitch${i}_pixian_ai.png`);
+      img.onload = () => {
+        loaded++;
+        if (loaded === totalDance3Frames) resolve();
+      };
+      img.onerror = () => console.warn(`Failed to load dance3 frame ${i}`);
+      dance3Images.push(img);
+    }
+  });
+}
+
+
 // Load voice lines as Audio objects
 let voiceLines = [];
 for (let i = 1; i <= 8; i++) {
@@ -275,6 +296,11 @@ let currentDanceImages = null;
 let frame = 0;
 const frameDelay = 150;
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
 
 // Decide if dancing every 20 seconds
 function ifDance(callback) {
@@ -282,12 +308,14 @@ function ifDance(callback) {
     callback(Math.random() < 0.6); // 60% chance to dance
   }, 10000);
 }
+const dances = [dance1Images,dance2Images,dance3Images]
 
 function startDanceTimer() {
   ifDance((choice) => {
     if (choice) {
       // Randomly pick dance1 or dance2
-      currentDanceImages = Math.random() < 0.5 ? dance1Images : dance2Images;
+      rand  = getRandomInt(0,2)
+      currentDanceImages = dances[rand]
       frame = 0;
     }
     shouldDance = choice;

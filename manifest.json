@@ -26,7 +26,8 @@
         "assets/flySound.mp3",
         "assets/spam_roast.gif",
         "assets/fireSE.mp3",
-        "assets/theme.mp3"
+        "assets/theme.mp3",
+        "assets/glitch/*.png"
       ],
       "matches": ["<all_urls>"]
     }
