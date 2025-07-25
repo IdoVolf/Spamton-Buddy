@@ -310,8 +310,8 @@ function ifDance(callback) {
     return;
   }
   
-  // Decide whether to dance (say 10% chance)
-  const willDance = Math.random() > 0.1;
+  // Decide whether to dance (say 60% chance)
+  const willDance = Math.random() > 0.4;
   callback(willDance);
   
   // Schedule next check in 8 seconds regardless
