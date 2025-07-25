@@ -357,7 +357,6 @@ spamton.addEventListener("auxclick", (e) => {
 });
 
 
-
 // Kick off loading and animation
 Promise.all([preloadDance1Frames(), preloadDance2Frames()]).then(() => {
   console.log("All frames loaded! Starting animation...");
