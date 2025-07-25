@@ -154,6 +154,8 @@ fireSound.loop =true;
 const spamTheme = new Audio(chrome.runtime.getURL("assets/theme.mp3"));
 spamTheme.loop = true;
 
+let dancing = false
+
 spamton.addEventListener("mousedown", (e) => {
   if(isRoasted){
     return 
@@ -288,8 +290,6 @@ spamton.addEventListener("click", () => {
   }
 });
 
-
-
 // Dance state variables
 let shouldDance = false;
 let currentDanceImages = null;
@@ -302,24 +302,35 @@ function getRandomInt(min, max) {
 
 
 
-// Decide if dancing every 20 seconds
+// Decide if dancing every 8 seconds
 function ifDance(callback) {
-  setTimeout(() => {
-    callback(Math.random() < 0.6); // 60% chance to dance
-  }, 10000);
+  if (dancing) {
+    // If already dancing, schedule to check again soon
+    setTimeout(() => ifDance(callback), 8000);
+    return;
+  }
+  
+  // Decide whether to dance (say 10% chance)
+  const willDance = Math.random() > 0.1;
+  callback(willDance);
+  
+  // Schedule next check in 8 seconds regardless
+  setTimeout(() => ifDance(callback), 8000);
 }
-const dances = [dance1Images,dance2Images,dance3Images]
+const dances = [dance1Images, dance2Images, dance3Images];
 
 function startDanceTimer() {
   ifDance((choice) => {
     if (choice) {
-      // Randomly pick dance1 or dance2
-      rand  = getRandomInt(0,2)
-      currentDanceImages = dances[rand]
+      dancing = true;
+      const rand = getRandomInt(0, 2);
+      currentDanceImages = dances[rand];
       frame = 0;
+      shouldDance = true;
+    } else {
+      shouldDance = false;
+      dancing = false;
     }
-    shouldDance = choice;
-    startDanceTimer();
   });
 }
 
@@ -349,6 +360,7 @@ function startAnimation() {
     } else {
       frame = (frame + 1) % idleImages.length;
       spamton.src = idleImages[frame].src;
+      dancing =false;
     }
   }, frameDelay);
 }
@@ -386,8 +398,12 @@ spamton.addEventListener("auxclick", (e) => {
 
 
 // Kick off loading and animation
-Promise.all([preloadDance1Frames(), preloadDance2Frames()]).then(() => {
+Promise.all([
+  preloadDance1Frames(),
+  preloadDance2Frames(),
+  preloadDance3Frames()
+]).then(() => {
   console.log("All frames loaded! Starting animation...");
   startAnimation();
+  spamTheme.play();
 });
-spamTheme.play()
